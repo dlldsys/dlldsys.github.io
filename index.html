@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuMu</title>
+</head>
+
+<body>
+    <iframe id="bi_iframe" src="https://pages-792.pages.dev/#/" onload="adjustIframe();" frameborder="0"
+        scrolling="auto">
+
+    </iframe>
+</body>
+
+</html>
+<script>
+    function adjustIframe() {
+        var ifm = document.getElementById("bi_iframe");
+        ifm.height = document.documentElement.clientHeight-50;
+        ifm.width = document.documentElement.clientWidth-50;
+    }
+</script>
