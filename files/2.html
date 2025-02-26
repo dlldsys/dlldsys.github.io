@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>视频水印处理系统</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        #preview {
+            width: 100%;
+            background: #000;
+        }
+
+        .controls {
+            margin: 15px 0;
+        }
+
+        canvas {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <input type="file" id="videoInput" accept="video/*" />
+        <div class="controls">
+            <button id="startBtn" disabled>开始录制</button>
+        </div>
+        <video id="preview" controls></video>
+        <a id="downloadLink" style="display:none;">下载视频</a>
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        const videoInput = document.getElementById('videoInput');
+        const preview = document.getElementById('preview');
+        const startBtn = document.getElementById('startBtn');
+        const downloadLink = document.getElementById('downloadLink');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let mediaRecorder;
+        let recordedChunks = [];
+        let currentLocation = { latitude: '获取中...', longitude: '获取中...' };
+
+        // 获取地理位置
+        navigator.geolocation.getCurrentPosition(position => {
+            currentLocation = {
+                latitude: position.coords.latitude.toFixed(4),
+                longitude: position.coords.longitude.toFixed(4)
+            };
+        }, () => {
+            console.log('地理位置获取失败，使用默认位置');
+            currentLocation = { latitude: 39.9042, longitude: 116.4074 }; // 北京默认坐标
+        });
+
+        // 视频上传处理
+        videoInput.addEventListener('change',async function (e) {
+            const file = e.target.files;
+            if (file) {
+                const file = e.target.files;
+                const stream = await file.stream();
+                preview.src = URL.createObjectURL(new MediaStream([stream]));
+                startBtn.disabled = false;
+            }
+        });
+
+        // 水印绘制函数
+        function drawWatermark() {
+            ctx.drawImage(preview, 0, 0, canvas.width, canvas.height);
+
+            // 水印样式
+            ctx.font = '14px Arial';
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.textAlign = 'right';
+
+            // 动态水印内容
+            const date = new Date();
+            const watermarkText = [
+                `时间：${date.toLocaleString()}`,
+                `坐标：${currentLocation.latitude}, ${currentLocation.longitude}`
+            ];
+
+            // 绘制水印
+            watermarkText.forEach((text, index) => {
+                ctx.fillText(text, canvas.width - 20, 30 + (index * 20));
+            });
+
+            requestAnimationFrame(drawWatermark);
+        }
+
+        // 录制控制
+        startBtn.addEventListener('click', () => {
+            // 设置Canvas尺寸匹配视频
+            canvas.width = preview.videoWidth;
+            canvas.height = preview.videoHeight;
+
+            // 启动绘制循环
+            preview.play();
+            requestAnimationFrame(drawWatermark);
+
+            // 配置媒体录制器
+            const stream = canvas.captureStream(30);
+            mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9'
+            });
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) recordedChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = `watermarked-video-${Date.now()}.webm`;
+                downloadLink.style.display = 'block';
+            };
+
+            mediaRecorder.start();
+            startBtn.textContent = '停止录制';
+            startBtn.onclick = () => {
+                mediaRecorder.stop();
+                startBtn.disabled = true;
+            };
+        });
+
+        // 初始化视频元数据
+        preview.addEventListener('loadedmetadata', () => {
+            canvas.width = preview.videoWidth;
+            canvas.height = preview.videoHeight;
+        });
+    </script>
+</body>
+
+</html>
