@@ -1,60 +1,7 @@
 // Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Giscus configuration
-    const giscusConfig = {
-        repo: "dlldsys/dlldsys.github.io",
-        repoId: "R_kgDON_BRTw",
-        category: "Announcements",
-        categoryId: "DIC_kwDON_BRT84C5OC-",
-        reactionsEnabled: "1",
-        emitMetadata: "0",
-        inputPosition: "bottom",
-        theme: "light",
-        lang: "zh-CN",
-        crossorigin: "anonymous"
-    };
-
-    // Project-specific mappings - each project gets its own term
-    const projectMappings = [
-        { id: "wechat-sdk-ai", container: "giscus-wechat-sdk-ai" },
-        { id: "angular-weui", container: "giscus-angular-weui" },
-        { id: "wecom-sdk", container: "giscus-wecom-sdk" },
-        { id: "bill-sync", container: "giscus-bill-sync" }
-    ];
-
-    // Initialize project-specific comments
-    projectMappings.forEach(project => {
-        initGiscus(project.container, project.id);
-    });
-
-    // Initialize unified page comments
-    initGiscus("giscus-page-comments", "page-comments");
-
-    // Giscus initialization function - add script to container
-    function initGiscus(containerId, mappingTerm) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        const script = document.createElement("script");
-        script.src = "https://giscus.app/client.js";
-        script.async = true;
-        script.crossOrigin = "anonymous";
-        script.dataset.repo = giscusConfig.repo;
-        script.dataset.repoId = giscusConfig.repoId;
-        script.dataset.category = giscusConfig.category;
-        script.dataset.categoryId = giscusConfig.categoryId;
-        script.dataset.mapping = "specific";
-        script.dataset.term = mappingTerm;
-        script.dataset.strict = "0";
-        script.dataset.reactionsEnabled = giscusConfig.reactionsEnabled;
-        script.dataset.emitMetadata = giscusConfig.emitMetadata;
-        script.dataset.inputPosition = giscusConfig.inputPosition;
-        script.dataset.theme = giscusConfig.theme;
-        script.dataset.lang = giscusConfig.lang;
-        script.dataset.loading = "lazy";
-
-        container.appendChild(script);
-    }
+    // Initialize single Giscus instance for page comments
+    initGiscus();
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -90,6 +37,31 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(card);
     });
 });
+
+// Giscus initialization for unified comments
+function initGiscus() {
+    const container = document.getElementById('giscus-page-comments');
+    if (!container) return;
+
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.dataset.repo = "dlldsys/dlldsys.github.io";
+    script.dataset.repoId = "R_kgDON_BRTw";
+    script.dataset.category = "Announcements";
+    script.dataset.categoryId = "DIC_kwDON_BRT84C5OC-";
+    script.dataset.mapping = "pathname";
+    script.dataset.strict = "0";
+    script.dataset.reactionsEnabled = "1";
+    script.dataset.emitMetadata = "0";
+    script.dataset.inputPosition = "bottom";
+    script.dataset.theme = "light";
+    script.dataset.lang = "zh-CN";
+    script.dataset.loading = "lazy";
+
+    container.appendChild(script);
+}
 
 // Listen for giscus theme changes
 window.addEventListener('message', function(e) {

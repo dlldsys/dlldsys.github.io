@@ -121,7 +121,7 @@ a:hover {
 }
 
 .project-item {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
 /* Project Card */
@@ -189,6 +189,8 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .tag {
@@ -198,6 +200,12 @@ a:hover {
     color: var(--text-secondary);
     border-radius: var(--radius-sm);
     font-weight: 500;
+}
+
+.card-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
 .visit-btn {
@@ -210,35 +218,19 @@ a:hover {
     color: var(--accent-hover);
 }
 
-/* Project Comments */
-.project-comments {
-    margin-top: 16px;
-    padding: 20px;
+.comment-btn {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 6px 12px;
     background: var(--bg-secondary);
-    border-radius: var(--radius);
-    border: 1px solid var(--border-color);
-}
-
-.comments-title {
-    font-size: 0.95rem;
-    font-weight: 600;
+    border-radius: var(--radius-sm);
     color: var(--text-secondary);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    transition: all 0.2s ease;
 }
 
-.comments-title::before {
-    content: '';
-    width: 4px;
-    height: 16px;
+.comment-btn:hover {
     background: var(--accent-color);
-    border-radius: 2px;
-}
-
-.giscus-container {
-    min-height: 150px;
+    color: #fff;
 }
 
 /* Unified Comments Section */
@@ -254,7 +246,7 @@ a:hover {
     margin-bottom: 24px;
 }
 
-#comments-container {
+.giscus-container {
     min-height: 200px;
 }
 
@@ -308,8 +300,14 @@ a:hover {
         padding: 20px;
     }
     
-    .project-comments {
-        padding: 16px;
+    .card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .card-actions {
+        width: 100%;
+        justify-content: flex-start;
     }
     
     .avatar img {
